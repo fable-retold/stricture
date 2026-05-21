@@ -1,6 +1,6 @@
 {
 	"name": "stricture",
-	"version": "4.0.3",
+	"version": "4.0.4",
 	"description": "Stricture MicroDDL JSON Parser — compiler and multi-target schema code generator",
 	"main": "source/Stricture.js",
 	"bin": {
@@ -40,20 +40,20 @@
 		"url": "https://github.com/stevenvelozo/stricture/issues"
 	},
 	"devDependencies": {
-		"pict-docuserve": "^0.1.5",
+		"pict-docuserve": "^1.3.2",
 		"quackage": "^1.2.3"
 	},
 	"dependencies": {
 		"async": "^3.2.6",
 		"blessed": "^0.1.81",
-		"fable": "^3.1.72",
+		"fable": "^3.1.75",
 		"jsonfile": "^6.2.0",
 		"line-by-line": "0.1.4",
 		"mkdirp": "^3.0.1",
-		"pict": "^1.0.366",
+		"pict": "^1.0.370",
 		"pict-application": "^1.0.34",
 		"pict-service-commandlineutility": "^1.0.19",
-		"pict-terminalui": "^0.0.3",
+		"pict-terminalui": "^1.0.0",
 		"pict-view": "^1.0.68",
 		"underscore": "^1.13.7"
 	},

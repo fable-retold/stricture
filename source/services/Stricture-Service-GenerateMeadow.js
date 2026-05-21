@@ -208,6 +208,12 @@ class StrictureServiceGenerateMeadow extends libFableServiceBase
 				tmpMeadowModel.Authorization = tmpModel.Authorization[tmpTable.TableName];
 			}
 
+			// Carry named indices through to the Meadow schema so connectors / migration manager pick them up
+			if (Array.isArray(tmpTable.Indices) && tmpTable.Indices.length > 0)
+			{
+				tmpMeadowModel.Indices = JSON.parse(JSON.stringify(tmpTable.Indices));
+			}
+
 			// Embed the Meadow schema within the JsonSchema for cross-referencing
 			let tmpJSONSchemaInsert = JSON.parse(JSON.stringify(tmpMeadowModel));
 			delete tmpJSONSchemaInsert.JsonSchema;

@@ -148,6 +148,11 @@ function generateMeadowSchema(pModelData)
 		tmpModel.Schema.push(tmpSchemaEntry);
 	}
 
+	if (Array.isArray(tmpTable.Indices) && tmpTable.Indices.length > 0)
+	{
+		tmpModel.Indices = JSON.parse(JSON.stringify(tmpTable.Indices));
+	}
+
 	return tmpModel;
 }
 
@@ -167,6 +172,8 @@ function generateMeadowSchema(pModelData)
  *   - `^`  Boolean column
  *   - `>`  Table description
  *   - `"`  Column description
+ *   - `+`  Named index (e.g. `+IX_User_Email Email`)
+ *   - `+!` Named unique index (e.g. `+!AK_User_Username UserName`)
  *   - `->` Join definition
  *   - `=>` Table-level join definition
  */
@@ -306,6 +313,7 @@ class StrictureServiceCompiler extends libFableServiceBase
 					TableName: pScopeHash,
 					Domain: pParserState.CurrentDomain,
 					Columns: [],
+					Indices: [],
 					Description: ''
 				};
 				pStrictureModel.TablesSequence.push(pScopeHash);
@@ -629,6 +637,40 @@ class StrictureServiceCompiler extends libFableServiceBase
 							tmpColumn.Description = tmpLine.substring(tmpLineSplit[0].length + 1);
 							tmpColumn.Description = tmpColumn.Description.substring(0, tmpColumn.Description.length - 1);
 							break;
+
+						case '+':
+						{
+							// Named index. Syntax:
+							//   +IndexName Col1[, Col2, ...]    regular
+							//   +!IndexName Col1[, Col2, ...]   unique
+							tmpLineType = 'Index';
+							let tmpUnique = (tmpLine.charAt(1) === '!');
+							let tmpNameStart = tmpUnique ? 2 : 1;
+							let tmpIndexName = tmpLineSplit[0].substring(tmpNameStart);
+							let tmpIndexColumns = [];
+							if (tmpLine.length > tmpLineSplit[0].length)
+							{
+								let tmpRest = tmpLine.substring(tmpLineSplit[0].length).trim();
+								tmpIndexColumns = tmpRest.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
+							}
+							if (tmpIndexName.length === 0)
+							{
+								tmpSelf.log.warn(`  > Index declaration on line #${pParserState.LineCount} is missing a name; skipping.`);
+							}
+							else if (tmpIndexColumns.length === 0)
+							{
+								tmpSelf.log.warn(`  > Index [${tmpIndexName}] on line #${pParserState.LineCount} has no columns; skipping.`);
+							}
+							else
+							{
+								pStrictureModel.Tables[pParserState.CurrentScope].Indices.push({
+									Name: tmpIndexName,
+									Columns: tmpIndexColumns,
+									Unique: tmpUnique
+								});
+							}
+							break;
+						}
 
 						case '>':
 							// Table description

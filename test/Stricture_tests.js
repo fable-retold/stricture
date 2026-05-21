@@ -21,6 +21,7 @@ var _TestOutputFolder = libPath.resolve(__dirname, '../test_output/') + '/';
 var _SimpleAddressFile = libPath.resolve(__dirname, '../Examples/SimpleAddress.mddl');
 var _ComplexAddressFile = libPath.resolve(__dirname, '../Examples/ComplexAddress.mddl');
 var _NorthwindFile = libPath.resolve(__dirname, '../Examples/Northwind.mddl');
+var _IndexedSchemaFile = libPath.resolve(__dirname, '../Examples/IndexedSchema.mddl');
 
 // Clean up test output before the run, then ensure the directory exists
 function cleanTestOutput()
@@ -508,6 +509,136 @@ suite
 								// CreatingIDUser should be detected as CreateIDUser type
 								var tmpCreatingCol = tmpAddressSchema.Schema.find(function (s) { return s.Column === 'CreatingIDUser'; });
 								Expect(tmpCreatingCol.Type).to.equal('CreateIDUser');
+
+								fDone();
+							});
+					}
+				);
+			}
+		);
+
+		// ========================================================================
+		// Named Index Parsing
+		// ========================================================================
+		suite
+		(
+			'Named Index Parsing',
+			function ()
+			{
+				test
+				(
+					'should parse single-column unique and regular indexes onto the table',
+					function (fDone)
+					{
+						var tmpInstance = newStricture();
+						var tmpCompiler = tmpInstance.instantiateServiceProvider('StrictureCompiler');
+
+						tmpCompiler.compileFile(_IndexedSchemaFile, _TestOutputFolder, 'IndexTest',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+
+								var tmpExtended = JSON.parse(libFS.readFileSync(_TestOutputFolder + 'IndexTest-Extended.json', 'utf8'));
+								var tmpUser = tmpExtended.Tables.User;
+
+								Expect(tmpUser.Indices).to.be.an('array');
+								Expect(tmpUser.Indices.length).to.equal(3);
+
+								var tmpUsernameIdx = tmpUser.Indices.find(function (i) { return i.Name === 'AK_User_Username'; });
+								Expect(tmpUsernameIdx).to.be.an('object');
+								Expect(tmpUsernameIdx.Unique).to.equal(true);
+								Expect(tmpUsernameIdx.Columns).to.deep.equal(['UserName']);
+
+								var tmpActiveIdx = tmpUser.Indices.find(function (i) { return i.Name === 'IX_User_Active'; });
+								Expect(tmpActiveIdx).to.be.an('object');
+								Expect(tmpActiveIdx.Unique).to.equal(false);
+								Expect(tmpActiveIdx.Columns).to.deep.equal(['Active']);
+
+								fDone();
+							});
+					}
+				);
+
+				test
+				(
+					'should parse composite (multi-column) indexes',
+					function (fDone)
+					{
+						var tmpInstance = newStricture();
+						var tmpCompiler = tmpInstance.instantiateServiceProvider('StrictureCompiler');
+
+						tmpCompiler.compileFile(_IndexedSchemaFile, _TestOutputFolder, 'IndexCompositeTest',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+
+								var tmpExtended = JSON.parse(libFS.readFileSync(_TestOutputFolder + 'IndexCompositeTest-Extended.json', 'utf8'));
+								var tmpSession = tmpExtended.Tables.UserSession;
+
+								var tmpComposite = tmpSession.Indices.find(function (i) { return i.Name === 'IX_UserSession_UserDate'; });
+								Expect(tmpComposite).to.be.an('object');
+								Expect(tmpComposite.Unique).to.equal(false);
+								Expect(tmpComposite.Columns).to.deep.equal(['IDUser', 'LoginDate']);
+
+								fDone();
+							});
+					}
+				);
+
+				test
+				(
+					'should carry parsed indexes through to the MeadowSchema for connector consumption',
+					function (fDone)
+					{
+						var tmpInstance = newStricture();
+						var tmpCompiler = tmpInstance.instantiateServiceProvider('StrictureCompiler');
+
+						tmpCompiler.compileFile(_IndexedSchemaFile, _TestOutputFolder, 'IndexMeadowTest',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+
+								var tmpExtended = JSON.parse(libFS.readFileSync(_TestOutputFolder + 'IndexMeadowTest-Extended.json', 'utf8'));
+								var tmpUserMeadow = tmpExtended.Tables.User.MeadowSchema;
+								var tmpSessionMeadow = tmpExtended.Tables.UserSession.MeadowSchema;
+
+								Expect(tmpUserMeadow.Indices).to.be.an('array');
+								Expect(tmpUserMeadow.Indices.length).to.equal(3);
+
+								var tmpUserMeadowEmail = tmpUserMeadow.Indices.find(function (i) { return i.Name === 'AK_User_Email'; });
+								Expect(tmpUserMeadowEmail.Unique).to.equal(true);
+								Expect(tmpUserMeadowEmail.Columns).to.deep.equal(['Email']);
+
+								var tmpSessionMeadowComposite = tmpSessionMeadow.Indices.find(function (i) { return i.Name === 'IX_UserSession_UserDate'; });
+								Expect(tmpSessionMeadowComposite.Columns).to.deep.equal(['IDUser', 'LoginDate']);
+
+								fDone();
+							});
+					}
+				);
+
+				test
+				(
+					'should not introduce Indices on tables without index declarations',
+					function (fDone)
+					{
+						var tmpInstance = newStricture();
+						var tmpCompiler = tmpInstance.instantiateServiceProvider('StrictureCompiler');
+
+						tmpCompiler.compileFile(_SimpleAddressFile, _TestOutputFolder, 'IndexAbsentTest',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+
+								var tmpExtended = JSON.parse(libFS.readFileSync(_TestOutputFolder + 'IndexAbsentTest-Extended.json', 'utf8'));
+								var tmpUser = tmpExtended.Tables.User;
+
+								// The DDL-level Indices array is always initialized (empty)
+								Expect(tmpUser.Indices).to.be.an('array');
+								Expect(tmpUser.Indices.length).to.equal(0);
+
+								// MeadowSchema only gets an Indices field when there are declarations
+								Expect(tmpUser.MeadowSchema.Indices).to.equal(undefined);
 
 								fDone();
 							});

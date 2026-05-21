@@ -107,6 +107,45 @@ Use `>` at the start of a line within a table stanza:
 
 Multiple `>` lines are concatenated with paragraph breaks.
 
+## Named Indexes
+
+Declare a named index inside a table stanza with a `+` line. The first token
+after `+` is the index name; remaining tokens are a comma-separated column
+list:
+
+```
+!UserSession
+@IDUserSession
+~IDUser -> IDUser
+$SessionToken 256
+&LoginDate
+&ExpirationDate
+
++IX_UserSession_Token SessionToken
++IX_UserSession_UserDate IDUser, LoginDate
+```
+
+Prefix the name with `!` to declare a unique index:
+
+```
+!User
+@IDUser
+$UserName 128
+$Email 256
+
++!AK_User_Username UserName
++!AK_User_Email Email
++IX_User_NameEmail UserName, Email
+```
+
+Each declared index is carried through to the generated Meadow schema as an
+entry in `Indices[]` of the form `{ Name, Columns: [...], Unique }`. The
+Meadow connector layer (e.g. `meadow-connection-mysql`) emits the
+corresponding `CREATE [UNIQUE] INDEX` SQL via `getIndexDefinitionsFromSchema`,
+so `meadow-migrationmanager` picks them up automatically when deploying or
+diffing schemas. Index declarations must live inside the table stanza (above
+the blank line that closes it).
+
 ## Comments
 
 Lines starting with `/` are treated as comments and ignored:
@@ -265,6 +304,8 @@ $PasswordHash 128
 &DeleteDate
 #DeletingIDUser -> IDUser
 ^Deleted
++!AK_User_Username UserName
++IX_User_Email Email
 
 !UserSession
 @IDUserSession
@@ -274,6 +315,8 @@ $SessionToken 256
 &ExpirationDate
 &CreateDate
 #CreatingIDUser -> IDUser
++!AK_UserSession_Token SessionToken
++IX_UserSession_UserDate IDUser, LoginDate
 
 [Authorization User]
 Read User Mine
