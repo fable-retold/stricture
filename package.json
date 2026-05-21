@@ -1,6 +1,6 @@
 {
 	"name": "stricture",
-	"version": "4.0.4",
+	"version": "4.0.5",
 	"description": "Stricture MicroDDL JSON Parser — compiler and multi-target schema code generator",
 	"main": "source/Stricture.js",
 	"bin": {

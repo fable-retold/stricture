@@ -1,0 +1,25 @@
+/ Example MicroDDL demonstrating named index declarations.
+/ Indexes are declared with `+` lines inside a table stanza:
+/   +IndexName Col1[, Col2, ...]     regular index
+/   +!IndexName Col1[, Col2, ...]    unique index
+
+!User
+@IDUser
+$UserName 128
+$Email 256
+$PasswordHash 128
+^Active
+&CreateDate
++!AK_User_Username UserName
++!AK_User_Email Email
++IX_User_Active Active
+
+!UserSession
+@IDUserSession
+#IDUser -> IDUser
+$SessionToken 256
+&LoginDate
+&ExpirationDate
+&CreateDate
++!AK_UserSession_Token SessionToken
++IX_UserSession_UserDate IDUser, LoginDate
