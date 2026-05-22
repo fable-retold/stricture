@@ -1,0 +1,7 @@
+{
+	"Name": "stricture",
+	"Version": "4.0.6",
+	"Description": "Stricture MicroDDL JSON Parser — compiler and multi-target schema code generator",
+	"GeneratedAt": "2026-05-22T01:34:51.801Z",
+	"GitCommit": "d84d0f9"
+}

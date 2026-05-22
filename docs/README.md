@@ -9,6 +9,7 @@ Stricture is a MicroDDL compiler that turns a simple, line-based schema definiti
 - **MicroDDL Language** -- concise, Markdown-inspired syntax for defining tables, columns, types and relationships
 - **Multi-Target Output** -- generate MySQL, Meadow schemas, Markdown docs, LaTeX docs, CSV dictionaries, Graphviz diagrams and test fixtures from a single source
 - **Relationship Diagrams** -- automatic Graphviz DOT generation with optional image compilation
+- **Named Indexes** -- declare regular and unique indexes inline with `+IndexName Col, Col` / `+!IndexName Col` lines that flow through to migration tooling
 - **Authorization Definitions** -- declare per-table, per-role security policies inline with your schema
 - **PICT UI Definitions** -- define Create, List, Record, Update and Delete view configurations alongside your data model
 - **Audit Column Detection** -- magic column names (CreateDate, UpdateDate, Deleted, etc.) are automatically wired into Meadow's audit tracking
