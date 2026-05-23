@@ -1,5 +1,7 @@
 # Stricture
 
+> **[&#9654; Read the Stricture Documentation](https://stevenvelozo.github.io/stricture/)** &mdash; interactive docs with the full API reference.
+
 > A Markdown-inspired data definition language and multi-target schema compiler
 
 Stricture is a MicroDDL compiler that turns a simple, line-based schema definition into MySQL scripts, Meadow schema files, relationship diagrams, data dictionaries and test fixtures.  Define your data model once in a human-readable format and generate everything you need for your database, API layer and documentation.
