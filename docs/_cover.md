@@ -12,5 +12,5 @@ Define your data model once in MicroDDL and generate MySQL scripts, Meadow schem
 - **Magic Audit Columns** — `CreateDate`, `UpdateDate`, `Deleted`, etc. are automatically wired into Meadow's audit tracking
 
 [Get Started](MicroDDL-Syntax.md)
-[GitHub](https://github.com/stevenvelozo/stricture)
+[GitHub](https://github.com/fable-retold/stricture)
 [npm](https://www.npmjs.com/package/stricture)

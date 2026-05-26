@@ -240,9 +240,9 @@ Detailed command documentation is available in the `docs/` folder:
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
-- [foxhound](https://github.com/stevenvelozo/foxhound) - Query DSL for SQL generation
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
+- [meadow](https://github.com/fable-retold/meadow) - Data access and ORM
+- [foxhound](https://github.com/fable-retold/foxhound) - Query DSL for SQL generation
+- [fable](https://github.com/fable-retold/fable) - Application services framework
 
 ## License
 

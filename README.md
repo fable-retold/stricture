@@ -1,6 +1,6 @@
 # Stricture
 
-> **[&#9654; Read the Stricture Documentation](https://stevenvelozo.github.io/stricture/)** &mdash; interactive docs with the full API reference.
+> **[&#9654; Read the Stricture Documentation](https://fable-retold.github.io/stricture/)** &mdash; interactive docs with the full API reference.
 
 > A Markdown-inspired data definition language and multi-target schema compiler
 
@@ -472,12 +472,12 @@ npm run docker-dev-run
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) -- Data access and ORM
-- [foxhound](https://github.com/stevenvelozo/foxhound) -- Query DSL for SQL generation
-- [fable](https://github.com/stevenvelozo/fable) -- Application services framework
-- [pict](https://github.com/stevenvelozo/pict) -- View and application framework
-- [pict-service-commandlineutility](https://github.com/stevenvelozo/pict-service-commandlineutility) -- CLI framework
-- [pict-terminalui](https://github.com/stevenvelozo/pict-terminalui) -- Terminal UI bridge
+- [meadow](https://github.com/fable-retold/meadow) -- Data access and ORM
+- [foxhound](https://github.com/fable-retold/foxhound) -- Query DSL for SQL generation
+- [fable](https://github.com/fable-retold/fable) -- Application services framework
+- [pict](https://github.com/fable-retold/pict) -- View and application framework
+- [pict-service-commandlineutility](https://github.com/fable-retold/pict-service-commandlineutility) -- CLI framework
+- [pict-terminalui](https://github.com/fable-retold/pict-terminalui) -- Terminal UI bridge
 
 ## License
 

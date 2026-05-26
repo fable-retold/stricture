@@ -247,8 +247,8 @@ built from the catalog.
   - [Installation](installation.md)
   - [Quick Start](quick-start.md)
 - Fable
-  - [fable](https://stevenvelozo.github.io/fable/)
-  - [fable-log](https://stevenvelozo.github.io/fable-log/)
+  - [fable](https://fable-retold.github.io/fable/)
+  - [fable-log](https://fable-retold.github.io/fable-log/)
 - Guides
   - [Configuration](configuration.md)
 ```
