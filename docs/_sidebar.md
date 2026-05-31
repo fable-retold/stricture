@@ -1,6 +1,8 @@
 - Overview
 
   - [Introduction](README.md)
+  - [Quick Start](quickstart.md)
+  - [Architecture](architecture.md)
   - [MicroDDL Syntax](MicroDDL-Syntax.md)
   - [Legacy Compiler](Stricture-Legacy-Compiler.md)
 
