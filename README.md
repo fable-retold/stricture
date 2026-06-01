@@ -1,6 +1,6 @@
 # Stricture
 
-> **[&#9654; Read the Stricture Documentation](https://fable-retold.github.io/stricture/)** &mdash; interactive docs with the full API reference.
+> **[Read the Stricture Documentation](https://fable-retold.github.io/stricture/)** - interactive docs with the full API reference.
 
 > A Markdown-inspired data definition language and multi-target schema compiler
 
