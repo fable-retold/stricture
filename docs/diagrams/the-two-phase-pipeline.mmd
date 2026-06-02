@@ -1,0 +1,17 @@
+flowchart TD
+	MDDL["MicroDDL Source<br/>(.mddl / .ddl)"]
+	Compiler["StrictureCompiler<br/>(parse + build model)"]
+	Basic["{prefix}.json<br/>(basic table model)"]
+	Extended["{prefix}-Extended.json<br/>(tables + auth + endpoints +<br/>PICT + inline Meadow schemas)"]
+	PICT["{prefix}-PICT.json<br/>(UI definitions)"]
+	Loader["StrictureModelLoader<br/>(load model + build indices)"]
+	Generators["Generator Services<br/>(MySQL, Meadow, Markdown,<br/>LaTeX, CSV, Graph, Auth,<br/>Pict, Test Fixtures)"]
+	Artifacts["Output Artifacts<br/>(SQL, schema JSON, docs,<br/>diagrams, fixtures)"]
+
+	MDDL --> Compiler
+	Compiler --> Basic
+	Compiler --> Extended
+	Compiler --> PICT
+	Extended --> Loader
+	Loader --> Generators
+	Generators --> Artifacts

@@ -1,0 +1,15 @@
+sequenceDiagram
+	participant CLI as full command
+	participant Comp as StrictureCompiler
+	participant Loader as StrictureModelLoader
+	participant Gen as Generators
+
+	CLI->>Comp: compileFile(input, out, prefix)
+	Comp-->>CLI: {prefix}.json + -Extended.json + -PICT.json
+	CLI->>Loader: loadFromFile({prefix}-Extended.json)
+	Loader-->>CLI: Model + indices in AppData
+	CLI->>Gen: MySQL -> mysql_create/
+	CLI->>Gen: Meadow -> meadow/
+	CLI->>Gen: Markdown -> doc/
+	CLI->>Gen: Relationships -> doc/diagrams/
+	CLI->>Gen: RelationshipsFull -> doc/diagrams/

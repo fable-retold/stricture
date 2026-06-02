@@ -1,0 +1,24 @@
+graph LR
+	Model["Compiled Model<br/>(via StrictureModelLoader)"]
+
+	MySQL["StrictureGenerateMySQL<br/>CREATE TABLE statements"]
+	Migrate["StrictureGenerateMySQLMigrate<br/>INSERT...SELECT migration stubs"]
+	Meadow["StrictureGenerateMeadow<br/>per-table Meadow schema JSON"]
+	Markdown["StrictureGenerateMarkdown<br/>Markdown data dictionary"]
+	LaTeX["StrictureGenerateLaTeX<br/>LaTeX data dictionary"]
+	CSV["StrictureGenerateDictionaryCSV<br/>CSV data dictionary"]
+	Graph["StrictureGenerateModelGraph<br/>Graphviz DOT diagrams"]
+	Auth["StrictureGenerateAuthChart<br/>CSV authorization matrix"]
+	Pict["StrictureGeneratePict<br/>AMD/RequireJS PICT UI model"]
+	Fixtures["StrictureGenerateTestFixtures<br/>per-table fixture JSON"]
+
+	Model --> MySQL
+	Model --> Migrate
+	Model --> Meadow
+	Model --> Markdown
+	Model --> LaTeX
+	Model --> CSV
+	Model --> Graph
+	Model --> Auth
+	Model --> Pict
+	Model --> Fixtures

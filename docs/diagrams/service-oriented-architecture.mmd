@@ -1,0 +1,13 @@
+graph TB
+	Stricture["Stricture<br/>(extends Pict, which extends Fable)"]
+	Core["Core Services<br/>StrictureCompiler<br/>StrictureModelLoader"]
+	Gens["Generator Services<br/>(10 generators)"]
+	Compare["StrictureCompareDDL<br/>(schema-diff service)"]
+	CLI["CLI<br/>(pict-service-commandlineutility)<br/>Commander.js subcommands"]
+	TUI["TUI<br/>(pict-application + pict-terminalui<br/>+ blessed)"]
+
+	Stricture --> Core
+	Stricture --> Gens
+	Stricture --> Compare
+	Stricture --> CLI
+	Stricture --> TUI

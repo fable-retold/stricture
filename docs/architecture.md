@@ -13,25 +13,8 @@ text into an intermediate JSON model. Second, one or more **generators** read
 that model and emit output artifacts. The `full` command chains both phases in
 a single pass.
 
-```mermaid
-flowchart TD
-	MDDL["MicroDDL Source<br/>(.mddl / .ddl)"]
-	Compiler["StrictureCompiler<br/>(parse + build model)"]
-	Basic["{prefix}.json<br/>(basic table model)"]
-	Extended["{prefix}-Extended.json<br/>(tables + auth + endpoints +<br/>PICT + inline Meadow schemas)"]
-	PICT["{prefix}-PICT.json<br/>(UI definitions)"]
-	Loader["StrictureModelLoader<br/>(load model + build indices)"]
-	Generators["Generator Services<br/>(MySQL, Meadow, Markdown,<br/>LaTeX, CSV, Graph, Auth,<br/>Pict, Test Fixtures)"]
-	Artifacts["Output Artifacts<br/>(SQL, schema JSON, docs,<br/>diagrams, fixtures)"]
-
-	MDDL --> Compiler
-	Compiler --> Basic
-	Compiler --> Extended
-	Compiler --> PICT
-	Extended --> Loader
-	Loader --> Generators
-	Generators --> Artifacts
-```
+<!-- bespoke diagram: edit diagrams/the-two-phase-pipeline.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![The Two-Phase Pipeline](diagrams/the-two-phase-pipeline.svg)
 
 The compiler always writes three JSON files. Generators read a compiled JSON
 model -- almost always the `-Extended.json` model, which carries the
@@ -56,33 +39,8 @@ The compiler (`StrictureCompiler`) is a single-pass, line-oriented parser. Each
 line is dispatched on its first character (see the
 [MicroDDL Syntax](MicroDDL-Syntax.md) reference for the full symbol table).
 
-```mermaid
-flowchart TD
-	Read["Read MicroDDL line by line"]
-	Dispatch{"First<br/>character?"}
-	Table["! -> open a table stanza"]
-	Column["@ % ~ # . $ * & ^ { -> add a column<br/>to the current table"]
-	Index["+ -> add a named index"]
-	Directive["[ -> domain / include /<br/>authorization / PICT stanza"]
-	Blank["blank line -> close the<br/>current stanza, reset state"]
-	Include["Resolve [Include ...] files<br/>recursively"]
-	Schemas["Auto-generate inline<br/>Meadow schemas per table"]
-	Write["Write basic + extended + PICT JSON"]
-
-	Read --> Dispatch
-	Dispatch --> Table
-	Dispatch --> Column
-	Dispatch --> Index
-	Dispatch --> Directive
-	Dispatch --> Blank
-	Table --> Include
-	Column --> Include
-	Index --> Include
-	Directive --> Include
-	Blank --> Include
-	Include --> Schemas
-	Schemas --> Write
-```
+<!-- bespoke diagram: edit diagrams/compiler-internals.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![Compiler Internals](diagrams/compiler-internals.svg)
 
 The parser tracks a small amount of state as it goes -- the current table
 scope, the current stanza type (table, authorization, or one of the PICT view
@@ -102,32 +60,8 @@ join indices) and writes its artifacts. Because each generator is independent,
 you can run exactly the ones you need, in any order, against a previously
 compiled model.
 
-```mermaid
-graph LR
-	Model["Compiled Model<br/>(via StrictureModelLoader)"]
-
-	MySQL["StrictureGenerateMySQL<br/>CREATE TABLE statements"]
-	Migrate["StrictureGenerateMySQLMigrate<br/>INSERT...SELECT migration stubs"]
-	Meadow["StrictureGenerateMeadow<br/>per-table Meadow schema JSON"]
-	Markdown["StrictureGenerateMarkdown<br/>Markdown data dictionary"]
-	LaTeX["StrictureGenerateLaTeX<br/>LaTeX data dictionary"]
-	CSV["StrictureGenerateDictionaryCSV<br/>CSV data dictionary"]
-	Graph["StrictureGenerateModelGraph<br/>Graphviz DOT diagrams"]
-	Auth["StrictureGenerateAuthChart<br/>CSV authorization matrix"]
-	Pict["StrictureGeneratePict<br/>AMD/RequireJS PICT UI model"]
-	Fixtures["StrictureGenerateTestFixtures<br/>per-table fixture JSON"]
-
-	Model --> MySQL
-	Model --> Migrate
-	Model --> Meadow
-	Model --> Markdown
-	Model --> LaTeX
-	Model --> CSV
-	Model --> Graph
-	Model --> Auth
-	Model --> Pict
-	Model --> Fixtures
-```
+<!-- bespoke diagram: edit diagrams/output-generators.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![Output Generators](diagrams/output-generators.svg)
 
 ### SQL Generation
 
@@ -182,23 +116,8 @@ The `full` command is the end-to-end build. It compiles the MicroDDL, loads the
 extended model, and then runs a fixed sequence of generators, writing each
 target into its own subdirectory.
 
-```mermaid
-sequenceDiagram
-	participant CLI as full command
-	participant Comp as StrictureCompiler
-	participant Loader as StrictureModelLoader
-	participant Gen as Generators
-
-	CLI->>Comp: compileFile(input, out, prefix)
-	Comp-->>CLI: {prefix}.json + -Extended.json + -PICT.json
-	CLI->>Loader: loadFromFile({prefix}-Extended.json)
-	Loader-->>CLI: Model + indices in AppData
-	CLI->>Gen: MySQL -> mysql_create/
-	CLI->>Gen: Meadow -> meadow/
-	CLI->>Gen: Markdown -> doc/
-	CLI->>Gen: Relationships -> doc/diagrams/
-	CLI->>Gen: RelationshipsFull -> doc/diagrams/
-```
+<!-- bespoke diagram: edit diagrams/the-full-pipeline.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![The full Pipeline](diagrams/the-full-pipeline.svg)
 
 `full` does not run every generator. LaTeX, CSV dictionary, authorization,
 PICT, MySQL-migrate and test-fixtures are run as separate commands when needed.
@@ -242,21 +161,8 @@ extends Pict (which extends Fable) and registers every compiler stage and
 generator as a named service type. The same service types are also registered
 on the CLI program instance.
 
-```mermaid
-graph TB
-	Stricture["Stricture<br/>(extends Pict, which extends Fable)"]
-	Core["Core Services<br/>StrictureCompiler<br/>StrictureModelLoader"]
-	Gens["Generator Services<br/>(10 generators)"]
-	Compare["StrictureCompareDDL<br/>(schema-diff service)"]
-	CLI["CLI<br/>(pict-service-commandlineutility)<br/>Commander.js subcommands"]
-	TUI["TUI<br/>(pict-application + pict-terminalui<br/>+ blessed)"]
-
-	Stricture --> Core
-	Stricture --> Gens
-	Stricture --> Compare
-	Stricture --> CLI
-	Stricture --> TUI
-```
+<!-- bespoke diagram: edit diagrams/service-oriented-architecture.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![Service-Oriented Architecture](diagrams/service-oriented-architecture.svg)
 
 The registered service types are:
 

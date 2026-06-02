@@ -1,0 +1,25 @@
+flowchart TD
+	Read["Read MicroDDL line by line"]
+	Dispatch{"First<br/>character?"}
+	Table["! -> open a table stanza"]
+	Column["@ % ~ # . $ * & ^ { -> add a column<br/>to the current table"]
+	Index["+ -> add a named index"]
+	Directive["[ -> domain / include /<br/>authorization / PICT stanza"]
+	Blank["blank line -> close the<br/>current stanza, reset state"]
+	Include["Resolve [Include ...] files<br/>recursively"]
+	Schemas["Auto-generate inline<br/>Meadow schemas per table"]
+	Write["Write basic + extended + PICT JSON"]
+
+	Read --> Dispatch
+	Dispatch --> Table
+	Dispatch --> Column
+	Dispatch --> Index
+	Dispatch --> Directive
+	Dispatch --> Blank
+	Table --> Include
+	Column --> Include
+	Index --> Include
+	Directive --> Include
+	Blank --> Include
+	Include --> Schemas
+	Schemas --> Write
