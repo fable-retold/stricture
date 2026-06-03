@@ -42,23 +42,8 @@ npm install stricture
 
 Stricture uses a two-phase approach: first compile the MicroDDL text into an intermediate JSON model, then run one or more generators against that model.
 
-```
-MicroDDL Source (.mddl)
-  └── Compile
-        ├── MeadowModel.json              (basic table model)
-        ├── MeadowModel-Extended.json      (full model with auth + PICT)
-        └── MeadowModel-PICT.json          (UI definitions)
-              │
-              ├── MySQL Generator       -> CREATE TABLE scripts
-              ├── Meadow Generator      -> per-table schema JSON files
-              ├── Markdown Generator    -> data dictionary docs
-              ├── LaTeX Generator       -> printable documentation
-              ├── CSV Generator         -> spreadsheet-friendly dictionary
-              ├── Graph Generator       -> Graphviz relationship diagrams
-              ├── Auth Chart Generator  -> role/permission CSV matrix
-              ├── Pict Generator        -> RequireJS UI model
-              └── Test Object Generator -> fixture JSON files
-```
+<!-- bespoke diagram: edit diagrams/how-it-works.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/stricture/docs -->
+![How It Works](diagrams/how-it-works.svg)
 
 The `Full` command chains Compile, MySQL, Meadow, Markdown and Diagrams in a single pass.
 

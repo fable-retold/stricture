@@ -1,0 +1,15 @@
+MicroDDL Source (.mddl)
+  └── Compile
+        ├── MeadowModel.json              (basic table model)
+        ├── MeadowModel-Extended.json      (full model with auth + PICT)
+        └── MeadowModel-PICT.json          (UI definitions)
+              │
+              ├── MySQL Generator       -> CREATE TABLE scripts
+              ├── Meadow Generator      -> per-table schema JSON files
+              ├── Markdown Generator    -> data dictionary docs
+              ├── LaTeX Generator       -> printable documentation
+              ├── CSV Generator         -> spreadsheet-friendly dictionary
+              ├── Graph Generator       -> Graphviz relationship diagrams
+              ├── Auth Chart Generator  -> role/permission CSV matrix
+              ├── Pict Generator        -> RequireJS UI model
+              └── Test Object Generator -> fixture JSON files
