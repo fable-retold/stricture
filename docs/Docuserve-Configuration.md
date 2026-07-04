@@ -287,7 +287,7 @@ An optional markdown file that defines the top navigation bar.
 # Retold
 - [Docs](/)
 - [Guides](guides.md)
-- [GitHub](https://github.com/stevenvelozo/retold)
+- [GitHub](https://github.com/fable-retold/retold)
 ```
 
 ### Parsing Rules
@@ -308,7 +308,7 @@ An optional markdown file that defines the top navigation bar.
         { "Text": "Guides", "Href": "#/page/guides" }
     ],
     "ExternalLinks": [
-        { "Text": "GitHub", "Href": "https://github.com/stevenvelozo/retold" }
+        { "Text": "GitHub", "Href": "https://github.com/fable-retold/retold" }
     ]
 }
 ```
