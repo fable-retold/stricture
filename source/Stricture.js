@@ -70,4 +70,11 @@ class Stricture extends libPict
 	}
 }
 
+/**
+ * Logical integer types (Signed, Precision, Radix) recorded on compiled columns, and
+ * the range comparison schema diffs use.  Exposed statically so consumers can
+ * share the exact rules without instantiating Stricture.
+ */
+Stricture.IntegerTypes = require('./Stricture-IntegerTypes.js');
+
 module.exports = Stricture;

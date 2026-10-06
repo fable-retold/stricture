@@ -12,6 +12,7 @@
 const libFS = require('fs');
 
 const libFableServiceBase = require('fable').ServiceProviderBase;
+const libIntegerTypes = require('../Stricture-IntegerTypes.js');
 
 /**
  * Service that generates MySQL CREATE TABLE statements from the loaded model.
@@ -100,7 +101,7 @@ class StrictureServiceGenerateMySQL extends libFableServiceBase
 				switch (tmpColumn.DataType)
 				{
 					case 'ID':
-						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' INT UNSIGNED NOT NULL AUTO_INCREMENT');
+						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' ' + libIntegerTypes.getMySQLIntegerType(libIntegerTypes.getIntegerType(tmpColumn)) + ' NOT NULL AUTO_INCREMENT');
 						tmpPrimaryKey = tmpColumn.Column;
 						break;
 					case 'GUID':
@@ -116,11 +117,11 @@ class StrictureServiceGenerateMySQL extends libFableServiceBase
 						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' CHAR(' + tmpSize + ") NOT NULL DEFAULT '0xDe'");
 						break;
 					case 'ForeignKey':
-						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + " INT UNSIGNED NOT NULL DEFAULT '0'");
+						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' ' + libIntegerTypes.getMySQLIntegerType(libIntegerTypes.getIntegerType(tmpColumn)) + " NOT NULL DEFAULT '0'");
 						tmpPrimaryKey = tmpColumn.Column;
 						break;
 					case 'Numeric':
-						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + " INT NOT NULL DEFAULT '0'");
+						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' ' + libIntegerTypes.getMySQLIntegerType(libIntegerTypes.getIntegerType(tmpColumn)) + " NOT NULL DEFAULT '0'");
 						break;
 					case 'Decimal':
 						libFS.appendFileSync(tmpMySQLFile, '        ' + tmpColumn.Column + ' DECIMAL(' + tmpColumn.Size + ')');

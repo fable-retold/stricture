@@ -17,6 +17,7 @@ const libPath = require('path');
 const libLineReader = require('line-by-line');
 
 const libFableServiceBase = require('fable').ServiceProviderBase;
+const libIntegerTypes = require('../Stricture-IntegerTypes.js');
 
 // Load the default state for meadow and pict configuration settings
 const _DefaultAPIDefinitions = require('../defaults/Meadow-Endpoints-Definition-Defaults.js');
@@ -145,6 +146,15 @@ function generateMeadowSchema(pModelData)
 		}
 
 		tmpSchemaEntry.Size = tmpColumnSize;
+		// Carry the logical integer type to the Meadow schema too, so query
+		// layers can bind parameters wide enough for every legal value.
+		let tmpIntegerType = libIntegerTypes.getIntegerType(tmpTable.Columns[j]);
+		if (tmpIntegerType)
+		{
+			tmpSchemaEntry.Signed = tmpIntegerType.Signed;
+			tmpSchemaEntry.Precision = tmpIntegerType.Precision;
+			tmpSchemaEntry.Radix = tmpIntegerType.Radix;
+		}
 		tmpModel.Schema.push(tmpSchemaEntry);
 	}
 
@@ -704,6 +714,14 @@ class StrictureServiceCompiler extends libFableServiceBase
 
 					if (tmpLineType === 'Column')
 					{
+						// Record the logical integer type (signedness and width)
+						// so each engine can pick its closest native type rather
+						// than guessing from DataType.  Reset first: a redeclared
+						// column may have changed DataType.
+						delete tmpColumn.Signed;
+						delete tmpColumn.Precision;
+						delete tmpColumn.Radix;
+						libIntegerTypes.applyIntegerType(tmpColumn);
 						pStrictureModel.Tables[pParserState.CurrentScope].Columns.push(tmpColumn);
 					}
 					if (tmpLineType === 'Comment')

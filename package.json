@@ -1,6 +1,6 @@
 {
 	"name": "stricture",
-	"version": "4.0.6",
+	"version": "4.0.7",
 	"description": "Stricture MicroDDL JSON Parser — compiler and multi-target schema code generator",
 	"main": "source/Stricture.js",
 	"bin": {
@@ -40,22 +40,22 @@
 		"url": "https://github.com/fable-retold/stricture/issues"
 	},
 	"devDependencies": {
-		"pict-docuserve": "^1.4.4",
+		"pict-docuserve": "^1.4.19",
 		"quackage": "^1.3.0"
 	},
 	"dependencies": {
 		"async": "^3.2.6",
 		"blessed": "^0.1.81",
-		"fable": "^3.1.75",
-		"jsonfile": "^6.2.0",
-		"line-by-line": "0.1.4",
+		"fable": "^3.1.85",
+		"jsonfile": "^6.2.1",
+		"line-by-line": "0.1.6",
 		"mkdirp": "^3.0.1",
-		"pict": "^1.0.372",
+		"pict": "^1.0.401",
 		"pict-application": "^1.0.34",
-		"pict-service-commandlineutility": "^1.0.19",
+		"pict-service-commandlineutility": "^1.0.20",
 		"pict-terminalui": "^1.0.0",
 		"pict-view": "^1.0.68",
-		"underscore": "^1.13.7"
+		"underscore": "^1.13.8"
 	},
 	"mocha": {
 		"diff": true,

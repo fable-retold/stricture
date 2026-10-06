@@ -13,6 +13,7 @@
 const libFS = require('fs');
 
 const libFableServiceBase = require('fable').ServiceProviderBase;
+const libIntegerTypes = require('../Stricture-IntegerTypes.js');
 
 /**
  * Service that generates per-table Meadow schema JSON files.
@@ -199,6 +200,15 @@ class StrictureServiceGenerateMeadow extends libFableServiceBase
 				}
 
 				tmpSchemaEntry.Size = tmpColumnSize;
+				// Same logical integer type the compiler puts on the Extended
+				// model's MeadowSchema, so the per-table files match it.
+				let tmpIntegerType = libIntegerTypes.getIntegerType(tmpTable.Columns[j]);
+				if (tmpIntegerType)
+				{
+					tmpSchemaEntry.Signed = tmpIntegerType.Signed;
+					tmpSchemaEntry.Precision = tmpIntegerType.Precision;
+					tmpSchemaEntry.Radix = tmpIntegerType.Radix;
+				}
 				tmpMeadowModel.Schema.push(tmpSchemaEntry);
 			}
 

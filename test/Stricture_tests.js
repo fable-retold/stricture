@@ -1814,5 +1814,99 @@ suite
 				);
 			}
 		);
+
+		suite
+		(
+			'Integer Types',
+			function ()
+			{
+				var libIntegerTypes = require('../source/Stricture-IntegerTypes.js');
+				var UNSIGNED_32 = { Signed: false, Precision: 32, Radix: 2 };
+				var SIGNED_32 = { Signed: true, Precision: 32, Radix: 2 };
+
+				test
+				(
+					'should be exposed on the Stricture export',
+					function ()
+					{
+						Expect(require('../source/Stricture.js').IntegerTypes).to.equal(libIntegerTypes);
+					}
+				);
+
+				test
+				(
+					'should default from DataType to what the MySQL generator emits, and prefer explicit fields',
+					function ()
+					{
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'ID' })).to.deep.equal(UNSIGNED_32);
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'ForeignKey' })).to.deep.equal(UNSIGNED_32);
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'Numeric', Size: 'int' })).to.deep.equal(SIGNED_32);
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'Numeric', Precision: 64 })).to.deep.equal({ Signed: true, Precision: 64, Radix: 2 });
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'Numeric', Precision: 10, Radix: 10 })).to.deep.equal({ Signed: true, Precision: 10, Radix: 10 });
+						Expect(libIntegerTypes.getIntegerType({ DataType: 'String' })).to.equal(null);
+						Expect(libIntegerTypes.getMySQLIntegerType(UNSIGNED_32)).to.equal('INT UNSIGNED');
+						Expect(libIntegerTypes.getMySQLIntegerType(SIGNED_32)).to.equal('INT');
+						Expect(libIntegerTypes.getMySQLIntegerType({ Signed: true, Precision: 64, Radix: 2 })).to.equal('BIGINT');
+					}
+				);
+
+				test
+				(
+					'should treat a wider column as covering a narrower logical type, and nothing narrower',
+					function ()
+					{
+						Expect(libIntegerTypes.coversIntegerRange({ Signed: true, Precision: 64, Radix: 2 }, UNSIGNED_32)).to.equal(true);
+						Expect(libIntegerTypes.coversIntegerRange(UNSIGNED_32, UNSIGNED_32)).to.equal(true);
+						Expect(libIntegerTypes.coversIntegerRange(SIGNED_32, UNSIGNED_32)).to.equal(false);
+						Expect(libIntegerTypes.coversIntegerRange({ Signed: false, Precision: 64, Radix: 2 }, SIGNED_32)).to.equal(false);
+					}
+				);
+
+				test
+				(
+					'should compute ranges for decimal-digit precision (INFORMATION_SCHEMA reports INT as 10 digits)',
+					function ()
+					{
+						Expect(libIntegerTypes.getIntegerRange({ Signed: false, Precision: 10, Radix: 10 })).to.deep.equal({ Min: 0n, Max: 9999999999n });
+						// 10 decimal digits cover unsigned 32-bit (max 4,294,967,295) but 9 do not.
+						Expect(libIntegerTypes.coversIntegerRange({ Signed: false, Precision: 10, Radix: 10 }, UNSIGNED_32)).to.equal(true);
+						Expect(libIntegerTypes.coversIntegerRange({ Signed: false, Precision: 9, Radix: 10 }, UNSIGNED_32)).to.equal(false);
+					}
+				);
+
+				test
+				(
+					'should record Signed, Precision and Radix on compiled integer columns and Meadow schema entries',
+					function (fDone)
+					{
+						var tmpFolder = _TestOutputFolder + 'integer-types/';
+						libMkdirp.sync(tmpFolder);
+						var tmpDDL = tmpFolder + 'IntegerTypes.mddl';
+						libFS.writeFileSync(tmpDDL, '!Widget\n@IDWidget\n%GUIDWidget\n~IDOwner\n#Count\n#IDProject -> IDProject\n$Name 64\n');
+						newStricture().instantiateServiceProvider('StrictureCompiler').compileFile(tmpDDL, tmpFolder, 'IntegerTypes',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+								var tmpExtended = JSON.parse(libFS.readFileSync(tmpFolder + 'IntegerTypes-Extended.json', 'utf8'));
+								var tmpColumns = {};
+								tmpExtended.Tables.Widget.Columns.forEach(function (pColumn) { tmpColumns[pColumn.Column] = pColumn; });
+								Expect(tmpColumns.IDWidget).to.include(UNSIGNED_32);
+								Expect(tmpColumns.IDOwner).to.include(UNSIGNED_32);
+								Expect(tmpColumns.Count).to.include(SIGNED_32);
+								Expect(tmpColumns.IDProject).to.include(SIGNED_32);
+								Expect(tmpColumns.GUIDWidget).to.not.have.property('Precision');
+								Expect(tmpColumns.Name).to.not.have.property('Signed');
+
+								var tmpMeadow = {};
+								tmpExtended.Tables.Widget.MeadowSchema.Schema.forEach(function (pEntry) { tmpMeadow[pEntry.Column] = pEntry; });
+								Expect(tmpMeadow.IDWidget).to.include({ Type: 'AutoIdentity', Signed: false, Precision: 32, Radix: 2 });
+								Expect(tmpMeadow.IDOwner).to.include({ Type: 'Integer', Signed: false, Precision: 32, Radix: 2 });
+								Expect(tmpMeadow.Name).to.not.have.property('Precision');
+								fDone();
+							});
+					}
+				);
+			}
+		);
 	}
 );

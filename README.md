@@ -166,6 +166,25 @@ The `{` symbol has two forms:
 
 See [Advanced Column Types](#advanced-column-types) for details and examples.
 
+### Integer Types
+
+Every integer column (`@`, `~`, `#`) is compiled with its logical integer type, so each storage engine can choose its own closest native type instead of guessing from `DataType`. The names follow SQL's `INFORMATION_SCHEMA.COLUMNS`:
+
+- `Precision` is a number of digits, counted in `Radix`: `2` means bits, `10` means decimal digits.
+- `Signed` is an extension, because standard SQL has no unsigned integers. It defaults to `true`, as in SQL.
+
+| Symbol | `Signed` | `Precision` | `Radix` | Range |
+|--------|----------|-------------|---------|-------|
+| `@` ID | `false` | `32` | `2` | 0 to 4,294,967,295 |
+| `~` ForeignKey | `false` | `32` | `2` | 0 to 4,294,967,295 |
+| `#` Numeric | `true` | `32` | `2` | -2,147,483,648 to 2,147,483,647 |
+
+The fields appear on the compiled columns and on the Meadow schema entries. The MySQL generator renders from them (`INT UNSIGNED`, `INT`). An engine without unsigned integers stores an unsigned 32-bit column as a signed 64-bit one; MSSQL, for example, uses `BIGINT`.
+
+The rules live in `Stricture.IntegerTypes`, which also provides `coversIntegerRange(physical, logical)`. This is the range test schema diffs use: a column at least as wide as its logical type is acceptable. It accepts either radix, so introspected `NUMERIC_PRECISION` values in decimal digits compare correctly.
+
+Schemas compiled before these fields existed are read with the defaults above. Background: `retold/docs/architecture/numeric-type-parity.md`.
+
 ### Example
 
 ```
