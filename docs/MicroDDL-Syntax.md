@@ -175,6 +175,8 @@ Include another MicroDDL file to be parsed after the current file:
 
 The path is resolved relative to the directory of the current file.
 Multiple includes are processed in sequence after the main file completes.
+The end of each file closes any open stanza, as a blank line does, so a
+file may end directly after its last column or authorization line.
 
 ## Magic Column Names
 

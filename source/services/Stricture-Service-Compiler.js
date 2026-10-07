@@ -346,6 +346,15 @@ class StrictureServiceCompiler extends libFableServiceBase
 			}
 		};
 
+		/**
+		 * Close the open stanza, as a blank line does.
+		 */
+		let closeStanza = () =>
+		{
+			pParserState.StanzaType = 'None';
+			pParserState.CurrentScope = 'None';
+		};
+
 		// Parse the file line-by-line using the line-by-line module
 		let tmpLineReader = new libLineReader(pFileName);
 
@@ -368,9 +377,7 @@ class StrictureServiceCompiler extends libFableServiceBase
 
 				if (tmpLine === '')
 				{
-					// Blank line resets the stanza and scope
-					pParserState.StanzaType = 'None';
-					pParserState.CurrentScope = 'None';
+					closeStanza();
 				}
 				// ── Outside any stanza: look for stanza openers ──
 				else if (pParserState.CurrentScope === 'None')
@@ -740,6 +747,8 @@ class StrictureServiceCompiler extends libFableServiceBase
 		tmpLineReader.on('end',
 			() =>
 			{
+				// The end of a file is a blank line, so a stanza never runs on into the next file.
+				closeStanza();
 				tmpSelf.log.info(`  > Compilation complete for ${pFileName}`);
 
 				if (tmpIncludeFiles.length > 0)

@@ -68,7 +68,8 @@ that have PICT stanzas.
 
 1. Reads the MicroDDL file line-by-line
 2. Maintains parser state (`CurrentScope`, `StanzaType`, `CurrentDomain`)
-3. Blank lines reset the parser state, closing the current stanza
+3. Blank lines reset the parser state, closing the current stanza; so does
+   the end of each file
 4. Processes `[Include ...]` directives recursively after the main file
 5. After parsing, auto-generates inline Meadow schemas for each table
 6. Writes all three JSON output files

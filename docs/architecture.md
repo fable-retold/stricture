@@ -44,7 +44,7 @@ line is dispatched on its first character (see the
 
 The parser tracks a small amount of state as it goes -- the current table
 scope, the current stanza type (table, authorization, or one of the PICT view
-types), and the current domain. A blank line closes the open stanza and resets
+types), and the current domain. A blank line, or the end of a file, closes the open stanza and resets
 that state. `[Include ...]` directives are resolved recursively, relative to
 the directory of the file that declared them, after the main file is parsed.
 Once parsing finishes, the compiler walks every table and synthesizes an inline

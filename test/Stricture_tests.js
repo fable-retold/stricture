@@ -238,6 +238,34 @@ suite
 
 				test
 				(
+					'should close an open stanza at the end of each file so it cannot swallow the next included file',
+					function (fDone)
+					{
+						var tmpFolder = _TestOutputFolder + 'include-boundaries/';
+						libMkdirp.sync(tmpFolder);
+						// No file ends with a blank line, so each stanza is still open when the next file begins.
+						libFS.writeFileSync(tmpFolder + 'Bookstore.mddl', '[Include Author.mddl]\n[Include Book.mddl]\n[Include BookSecurity.mddl]\n!Store\n@IDStore\n$Name 64');
+						libFS.writeFileSync(tmpFolder + 'Author.mddl', '!Author\n@IDAuthor\n$Name 128');
+						libFS.writeFileSync(tmpFolder + 'Book.mddl', '!Book\n@IDBook\n#IDAuthor -> IDAuthor\n$Title 200\n');
+						libFS.writeFileSync(tmpFolder + 'BookSecurity.mddl', '[Authorization Book]\nUpdate Manager MyCustomer\n');
+						newStricture().instantiateServiceProvider('StrictureCompiler').compileFile(tmpFolder + 'Bookstore.mddl', tmpFolder, 'Bookstore',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+								var tmpExtended = JSON.parse(libFS.readFileSync(tmpFolder + 'Bookstore-Extended.json', 'utf8'));
+								Expect(tmpExtended.TablesSequence).to.deep.equal([ 'Store', 'Author', 'Book' ]);
+								var fColumnNames = function (pTable) { return tmpExtended.Tables[pTable].Columns.map(function (pColumn) { return pColumn.Column; }); };
+								Expect(fColumnNames('Store')).to.deep.equal([ 'IDStore', 'Name' ]);
+								Expect(fColumnNames('Author')).to.deep.equal([ 'IDAuthor', 'Name' ]);
+								Expect(fColumnNames('Book')).to.deep.equal([ 'IDBook', 'IDAuthor', 'Title' ]);
+								Expect(tmpExtended.Authorization.Book.Manager.Update).to.equal('MyCustomer');
+								fDone();
+							});
+					}
+				);
+
+				test
+				(
 					'should compile Northwind.mddl with many tables and relationships',
 					function (fDone)
 					{
