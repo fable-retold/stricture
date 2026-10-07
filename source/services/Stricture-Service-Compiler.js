@@ -398,7 +398,7 @@ class StrictureServiceCompiler extends libFableServiceBase
 					else if ((tmpLineSplit[0] === '[Domain') && (tmpLine.charAt(tmpLine.length - 1) === ']'))
 					{
 						// Domain change directive
-						pParserState.CurrentDomain = tmpLineSplit[1].substring(0, tmpLineSplit[1].length - 1);
+						pParserState.CurrentDomain = tmpLine.substring(tmpLineSplit[0].length, tmpLine.length - 1).trim();
 						tmpSelf.log.info(`  > Line #${pParserState.LineCount} changes the domain: ${pParserState.CurrentDomain}`);
 					}
 					else if ((tmpLineSplit[0] === '[Authorization') && (tmpLine.charAt(tmpLine.length - 1) === ']'))
@@ -450,7 +450,7 @@ class StrictureServiceCompiler extends libFableServiceBase
 						tmpSelf.log.info(`  > Line #${pParserState.LineCount} references include stanza: ${tmpIncludeFile}`);
 						let tmpIncludeFilePath = libPath.dirname(pFileName) + '/' + tmpIncludeFile;
 						tmpSelf.log.info(`  > Adding file ${tmpIncludeFilePath} to includes.`);
-						tmpIncludeFiles.push(tmpIncludeFilePath);
+						tmpIncludeFiles.push({ Path: tmpIncludeFilePath, Domain: pParserState.CurrentDomain });
 					}
 					else
 					{
@@ -765,8 +765,10 @@ class StrictureServiceCompiler extends libFableServiceBase
 						}
 						let tmpIncludeFile = tmpIncludeFiles[tmpIndex];
 						tmpIndex++;
-						tmpSelf.log.info(`--> Processing ${tmpIncludeFile} include file`);
-						tmpSelf.readMicroDDLFile(pStrictureModel, pParserState, tmpIncludeFile, processNextInclude);
+						tmpSelf.log.info(`--> Processing ${tmpIncludeFile.Path} include file in domain ${tmpIncludeFile.Domain}`);
+						// Includes are parsed after their parent finishes, so restore the domain in effect at the [Include] line.
+						pParserState.CurrentDomain = tmpIncludeFile.Domain;
+						tmpSelf.readMicroDDLFile(pStrictureModel, pParserState, tmpIncludeFile.Path, processNextInclude);
 					};
 					processNextInclude();
 				}

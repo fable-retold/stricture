@@ -266,6 +266,31 @@ suite
 
 				test
 				(
+					'should give each included file the domain in effect at its include line, keeping multi-word domain names whole',
+					function (fDone)
+					{
+						var tmpFolder = _TestOutputFolder + 'include-domains/';
+						libMkdirp.sync(tmpFolder);
+						libFS.writeFileSync(tmpFolder + 'Bookstore.mddl', '!Store\n@IDStore\n\n[Domain Catalog]\n[Include Catalog.mddl]\n[Domain Sales Floor]\n[Include Register.mddl]\n');
+						libFS.writeFileSync(tmpFolder + 'Catalog.mddl', '!Book\n@IDBook\n\n[Domain Rare Books]\n!Manuscript\n@IDManuscript\n');
+						libFS.writeFileSync(tmpFolder + 'Register.mddl', '!Receipt\n@IDReceipt\n');
+						newStricture().instantiateServiceProvider('StrictureCompiler').compileFile(tmpFolder + 'Bookstore.mddl', tmpFolder, 'Bookstore',
+							function (pError)
+							{
+								Expect(pError).to.not.be.ok;
+								var tmpExtended = JSON.parse(libFS.readFileSync(tmpFolder + 'Bookstore-Extended.json', 'utf8'));
+								Expect(tmpExtended.Tables.Store.Domain).to.equal('Default');
+								Expect(tmpExtended.Tables.Book.Domain).to.equal('Catalog');
+								Expect(tmpExtended.Tables.Manuscript.Domain).to.equal('Rare Books');
+								Expect(tmpExtended.Tables.Receipt.Domain).to.equal('Sales Floor');
+								Expect(tmpExtended.Tables.Receipt.MeadowSchema.Domain).to.equal('Sales Floor');
+								fDone();
+							});
+					}
+				);
+
+				test
+				(
 					'should compile Northwind.mddl with many tables and relationships',
 					function (fDone)
 					{

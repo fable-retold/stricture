@@ -163,7 +163,9 @@ Switch the domain context for subsequent table definitions:
 ```
 
 All tables defined after this directive belong to the `Reporting` domain
-until a new domain is declared. The default domain is `Default`.
+until a new domain is declared. The default domain is `Default`. A domain name
+may contain spaces. An included file starts in the domain in effect at its
+`[Include ...]` line.
 
 ## Include Files
 
